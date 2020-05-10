@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:VirtualFAT"
         Loaded="Window_Loaded"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Artemiy OS"
+        Name="BaseWindow"
+        Icon="Images/fat32-formatter.png"
+        Height="450" Width="800">
     <Grid>
         <TreeView x:Name="FolderView">
                 <TreeView.Resources>
@@ -15,7 +18,13 @@
                         <Setter.Value>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Width="20" Margin="3" Source="Images/drive.png" />
+                                    <Image Width="20" Margin="3"
+                                           Source="{Binding 
+                                                RelativeSource={RelativeSource
+                                                Mode=FindAncestor,
+                                                AncestorType={x:Type TreeViewItem}},
+                                                Path=Tag,
+                                                Converter={x:Static local:HeaderToImageConverter.Instance}}" />
                                     <TextBlock VerticalAlignment="Center" Text="{Binding}"></TextBlock>
                                 </StackPanel>
                             </DataTemplate>

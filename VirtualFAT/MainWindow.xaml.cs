@@ -20,13 +20,8 @@ namespace VirtualFAT
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<TreeItem> Drives { get; set; }
-
         public MainWindow()
         {
-            Drives = new List<TreeItem>();
-            Drives.Add(new TreeItem { Id = 0, Name = "C:\\" });
-            Drives.Add(new TreeItem { Id = 0, Name = "D:\\" });
             InitializeComponent();
         }
 
@@ -38,13 +33,63 @@ namespace VirtualFAT
         /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach (var drive in Drives)
-            {
-                var treeItem = new TreeViewItem {
-                    Header = drive.Name
-                };
+            // Get every item in the root
+          
+            // Create a Tree-View Item to represent it
+            var treeViewItem = new TreeViewItem {
+                // Add the title
+                Header = FakeOS.Volume.Name,
+                // Add the path
+                Tag = FakeOS.Volume.Tag
+            };
 
-                FolderView.Items.Add(treeItem);
+            // Create new test file inside the volume
+            var treeItem = FakeOS.AddDirectory("Test", ItemType.File, 0);
+
+            // Add a dummy child to the root Tree-View Item
+            treeViewItem.Items.Add(null);
+
+            // Listen out for item being expended
+            treeViewItem.Expanded += TreeItem_Expanded;
+
+                // Add an item to the main tree
+                FolderView.Items.Add(treeViewItem);
+        }
+
+        /// <summary>
+        /// When a disk/folder is expanded find sub folders/files
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TreeItem_Expanded(object sender, RoutedEventArgs e)
+        {
+            var treeViewItem = (TreeViewItem)sender;
+
+            // Exit if the item contains data
+            if (treeViewItem.Items.Count != 1 || treeViewItem.Items[0] != null)
+            {
+                return;
+            }
+
+            // Remove the dummy child
+            treeViewItem.Items.Clear();
+
+            // Get the full path
+            var fullPath = (string)treeViewItem.Tag;
+
+            // Create a blank list for directories
+            var directories = new List<string>();
+
+            // Get nested directories
+            foreach (var dir in FakeOS.GetDirectories(fullPath))
+            {
+                var newChildTreeViewItem = new TreeViewItem
+                {
+                    Header = dir.Name,
+                    Tag = dir.Tag
+                };
+                newChildTreeViewItem.Expanded += TreeItem_Expanded;
+                treeViewItem.Items.Add(newChildTreeViewItem);
             }
         }
         #endregion
