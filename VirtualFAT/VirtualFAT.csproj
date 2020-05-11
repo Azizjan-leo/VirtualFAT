@@ -58,6 +58,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="EnterFolderName.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +71,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drive.cs" />
+    <Compile Include="EnterFolderName.xaml.cs">
+      <DependentUpon>EnterFolderName.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FakeDirectory.cs" />
     <Compile Include="HeaderToImageConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace VirtualFAT
 {
@@ -41,9 +39,15 @@ namespace VirtualFAT
             FakeOS.AddDirectory("Music", ItemType.folder, mathematics.Id);
             // Add a dummy child to the root Tree-View Item
             treeViewItem.Items.Add(null);
-            ContextMenu contextMenu = new ContextMenu();
-            contextMenu.Items.Add("Create new item");
 
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem menuItemCreate = new MenuItem()
+            {
+                Header = "Create new folder",
+                Tag = FakeOS.Volume.Tag
+            };
+            menuItemCreate.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
+            contextMenu.Items.Add(menuItemCreate);
             treeViewItem.ContextMenu = contextMenu;
             // Listen out for item being expended
             treeViewItem.Expanded += TreeItem_Expanded;
@@ -87,7 +91,7 @@ namespace VirtualFAT
                     Tag = dir.Tag
                 };
                 ContextMenu contextMenu = new ContextMenu();
-                MenuItem menuItem = new MenuItem()
+                MenuItem menuItemDelete = new MenuItem()
                 {
                     Header = "Delete",
                     Tag = dir.Tag
@@ -96,12 +100,18 @@ namespace VirtualFAT
                 {
                     newChildTreeViewItem.Items.Add(null);
 
-                    contextMenu.Items.Add("Create new item");
+                    MenuItem menuItemCreate = new MenuItem()
+                    {
+                        Header = "Create new folder",
+                        Tag = dir.Tag
+                    };
+                    menuItemCreate.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
+                    contextMenu.Items.Add(menuItemCreate);
                     newChildTreeViewItem.Expanded += TreeItem_Expanded;
                 }
-
-                menuItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_Click));
-                contextMenu.Items.Add(menuItem);
+                // Bind the handler of removing items
+                menuItemDelete.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickDelete));
+                contextMenu.Items.Add(menuItemDelete);
                 newChildTreeViewItem.ContextMenu = contextMenu;
                 treeViewItem.Items.Add(newChildTreeViewItem);
             }
@@ -110,23 +120,83 @@ namespace VirtualFAT
                 treeViewItem.Name = "folderOpen";
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void MenuItem_ClickCreateFolder(object sender, RoutedEventArgs e)
+        {
+            var dialog = new EnterFolderName();
+            if (dialog.ShowDialog() == true)
+            {
+                var menuItem = sender as MenuItem;
+
+                // Find the parant from OS
+                TreeItem parant = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+                // Create our new child and put it among the parants children
+                TreeItem child = FakeOS.AddDirectory(dialog.ResponseText, ItemType.folder, parant.Id);
+
+                // Find parant of item user want to delete in the Tree
+                TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
+                // Create new Tree-ViewItem for our new child
+                TreeViewItem childTVI = new TreeViewItem()
+                {
+                    // Add the title
+                    Header = child.Name,
+                    // Add the path
+                    Tag = child.Tag,
+                    // Name for image
+                    Name = "Id" + child.Id.ToString()
+                };
+
+                // Add a dummy child to the root Tree-View Item for ability to expand our new folder
+                childTVI.Items.Add(null);
+
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem menuItemCreate = new MenuItem()
+                {
+                    Header = "Create new folder",
+                    Tag = child.Tag
+                };
+                menuItemCreate.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
+                contextMenu.Items.Add(menuItemCreate);
+                MenuItem menuItemDelete = new MenuItem()
+                {
+                    Header = "Delete",
+                    Tag = child.Tag
+                };
+                menuItemDelete.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickDelete));
+                contextMenu.Items.Add(menuItemDelete);
+
+                childTVI.ContextMenu = contextMenu;
+                // Listen out for item being expended
+                childTVI.Expanded += TreeItem_Expanded;
+
+                // Add new child Tree-ViewItem to the parant
+                parantTVI.Items.Add(childTVI);
+                FolderView.UpdateLayout();
+            }
+        }
+
+        private void MenuItem_ClickDelete(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
+
+            // Find the item from OS
             TreeItem itemToDelete = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+            // Find its parant from OS
             TreeItem parant = FakeOS.Volume.GetParantOf(itemToDelete.Id);
+            // Let's be sure that user really wants to delete the item
             MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete {itemToDelete.Name}?", "Artemiy OS", MessageBoxButton.OKCancel);
             switch (result)
             {
                 case MessageBoxResult.OK:
+                    // Remove item from OS
                     FakeOS.Volume.RemoveTreeItem(itemToDelete.Id);
-
+                    // Find parant of item user want to delete in the Tree
                     TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
+                    // Find item from the Tree by itself
                     TreeViewItem childTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + itemToDelete.Id); //FolderView.Items.GetItemAt(0);
+                    // Remove child from children of parant 
                     parantTVI.Items.Remove(childTVI);
-
+                    // Update the Tree so deleted item will be finaly removed from the UI
                     FolderView.UpdateLayout();
-                    MessageBox.Show("Item was deleted", "Artemiy OS");
                     break;
                 case MessageBoxResult.Cancel:
                     break;

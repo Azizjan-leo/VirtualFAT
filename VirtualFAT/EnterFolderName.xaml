@@ -1,0 +1,17 @@
+﻿<Window x:Class="VirtualFAT.EnterFolderName"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VirtualFAT"
+        mc:Ignorable="d"
+        Icon="Images/fat32-formatter.png"
+        Title="Artemiy OS" Height="109.459" Width="290.927">
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Enter folder name" />
+            <TextBox x:Name="ResponseTextBox" />
+            <Button Content="OK" Click="OKButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
