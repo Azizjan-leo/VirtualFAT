@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace VirtualFAT
 {
@@ -29,7 +31,7 @@ namespace VirtualFAT
                 // Add the path
                 Tag = FakeOS.Volume.Tag,
                 // Name for image
-                Name = FakeOS.Volume.Type.ToString()
+                Name = "Id" + FakeOS.Volume.Id.ToString()
 
             };
 
@@ -41,7 +43,7 @@ namespace VirtualFAT
             treeViewItem.Items.Add(null);
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.Items.Add("Create new item");
-           
+
             treeViewItem.ContextMenu = contextMenu;
             // Listen out for item being expended
             treeViewItem.Expanded += TreeItem_Expanded;
@@ -81,25 +83,55 @@ namespace VirtualFAT
                 {
                     Header = dir.Name,
                     // Let's puth the type here to conveert it into image later :)
-                    Name = dir.Type.ToString(),
+                    Name = "Id" + dir.Id.ToString(),
                     Tag = dir.Tag
                 };
                 ContextMenu contextMenu = new ContextMenu();
-                
-                contextMenu.Items.Add("Delete");
-
+                MenuItem menuItem = new MenuItem()
+                {
+                    Header = "Delete",
+                    Tag = dir.Tag
+                };
                 if (dir.Type == ItemType.folder || dir.Type == ItemType.drive)
                 {
                     newChildTreeViewItem.Items.Add(null);
+
                     contextMenu.Items.Add("Create new item");
                     newChildTreeViewItem.Expanded += TreeItem_Expanded;
                 }
+
+                menuItem.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_Click));
+                contextMenu.Items.Add(menuItem);
                 newChildTreeViewItem.ContextMenu = contextMenu;
                 treeViewItem.Items.Add(newChildTreeViewItem);
             }
 
             if(treeViewItem.Name == ItemType.folder.ToString())
                 treeViewItem.Name = "folderOpen";
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            TreeItem itemToDelete = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+            TreeItem parant = FakeOS.Volume.GetParantOf(itemToDelete.Id);
+            MessageBoxResult result = MessageBox.Show($"Are you sure you want to delete {itemToDelete.Name}?", "Artemiy OS", MessageBoxButton.OKCancel);
+            switch (result)
+            {
+                case MessageBoxResult.OK:
+                    FakeOS.Volume.RemoveTreeItem(itemToDelete.Id);
+
+                    TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
+                    TreeViewItem childTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + itemToDelete.Id); //FolderView.Items.GetItemAt(0);
+                    parantTVI.Items.Remove(childTVI);
+
+                    FolderView.UpdateLayout();
+                    MessageBox.Show("Item was deleted", "Artemiy OS");
+                    break;
+                case MessageBoxResult.Cancel:
+                    break;
+            }
+
         }
         #endregion
 

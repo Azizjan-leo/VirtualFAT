@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace VirtualFAT
@@ -46,5 +47,6 @@ namespace VirtualFAT
             // Return the list of dirs that was found inside the parant item
             return dirs;
         }
+
     }
 }
