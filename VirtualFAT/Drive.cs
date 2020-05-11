@@ -56,7 +56,8 @@ namespace VirtualFAT
             }
             return null;
         }
+
     }
-    public enum ItemType { Disk, Folder, File }
+    public enum ItemType { drive, folder, file }
 
 }

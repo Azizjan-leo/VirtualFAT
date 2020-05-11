@@ -14,7 +14,7 @@ namespace VirtualFAT
         public static HeaderToImageConverter Instance = new HeaderToImageConverter();
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return new BitmapImage(new Uri($"pack://application:,,,/Images/drive.png"));
+            return new BitmapImage(new Uri($"pack://application:,,,/Images/{value}.png"));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -103,8 +103,8 @@
   <ItemGroup>
     <Resource Include="Images\drive.png" />
     <Resource Include="Images\file.png" />
-    <Resource Include="Images\folder-closed.png" />
-    <Resource Include="Images\folder-open.png" />
+    <Resource Include="Images\folder.png" />
+    <Resource Include="Images\folderOpen.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\fat32-formatter.png" />
