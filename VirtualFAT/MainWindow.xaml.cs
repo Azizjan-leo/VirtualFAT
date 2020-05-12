@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,14 +34,10 @@ namespace VirtualFAT
 
             };
 
-            // Create new test file inside the volume
-            FakeOS.AddDirectory("Test", ItemType.file, 0);
-            var mathematics = FakeOS.AddDirectory("Mathematics", ItemType.folder, 0);
-            FakeOS.AddDirectory("Music", ItemType.folder, mathematics.Id);
             // Add a dummy child to the root Tree-View Item
             treeViewItem.Items.Add(null);
 
-            ContextMenu contextMenu = new ContextMenu();
+            var contextMenu = new ContextMenu();
             MenuItem menuItemCreate = new MenuItem()
             {
                 Header = "Create new folder",
@@ -56,6 +53,7 @@ namespace VirtualFAT
             menuItemCreateFile.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFile));
             contextMenu.Items.Add(menuItemCreateFile);
             treeViewItem.ContextMenu = contextMenu;
+
             // Listen out for item being expended
             treeViewItem.Expanded += TreeItem_Expanded;
 
@@ -106,14 +104,13 @@ namespace VirtualFAT
                 if (dir.Type == ItemType.folder || dir.Type == ItemType.drive)
                 {
                     newChildTreeViewItem.Items.Add(null);
-
-                    MenuItem menuItemCreate = new MenuItem()
+                    MenuItem menuItemCreateFolder = new MenuItem()
                     {
                         Header = "Create new folder",
                         Tag = dir.Tag
                     };
-                    menuItemCreate.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
-                    contextMenu.Items.Add(menuItemCreate);
+                    menuItemCreateFolder.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
+                    contextMenu.Items.Add(menuItemCreateFolder);
                     MenuItem menuItemCreateFile = new MenuItem()
                     {
                         Header = "Create new file",
@@ -121,7 +118,18 @@ namespace VirtualFAT
                     };
                     menuItemCreateFile.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFile));
                     contextMenu.Items.Add(menuItemCreateFile);
+                    newChildTreeViewItem.ContextMenu = contextMenu;
                     newChildTreeViewItem.Expanded += TreeItem_Expanded;
+                }
+                else // If it is a file let's add an Open command 
+                {
+                    MenuItem menuItemOpenFile = new MenuItem()
+                    {
+                        Header = "Open",
+                        Tag = dir.Tag
+                    };
+                    menuItemOpenFile.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickOpenFile));
+                    contextMenu.Items.Add(menuItemOpenFile);
                 }
                 // Bind the handler of removing items
                 menuItemDelete.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickDelete));
@@ -133,6 +141,24 @@ namespace VirtualFAT
             if(treeViewItem.Name == ItemType.folder.ToString())
                 treeViewItem.Name = "folderOpen";
         }
+
+        private void MenuItem_ClickOpenFile(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            TreeItem treeItem = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+            var notBad = new NotBad();
+            notBad.Title += " " + treeItem.Name;
+            notBad.IsNewDoc = false;
+            notBad.TextContent.Text = treeItem.Document.Content;
+            notBad.Changes = false;
+            if (notBad.ShowDialog() == true)
+            {
+                treeItem.Document.Content = notBad.TextContent.Text;
+                treeItem.Document.LastModification = DateTime.UtcNow;
+            }
+        }
+        #region AppendContext
+        #endregion
         #region ContextHandlers
         private void MenuItem_ClickCreateFile(object sender, RoutedEventArgs e)
         {
@@ -147,12 +173,21 @@ namespace VirtualFAT
 
                 // Find the parant from OS
                 TreeItem parant = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+               
                 // Create our new child and put it among the parants children
                 TreeItem child = FakeOS.AddDirectory(docName, ItemType.file, parant.Id);
 
                 // Find parant of item user want to delete in the Tree
                 TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
-                                                                                                                        // Create new Tree-ViewItem for our new child
+                                                                                                                        // Exit if the item contains data
+                if (parantTVI.Items[0] == null)
+                {
+                    // Remove the dummy child
+                    parantTVI.Items.Clear();
+                }
+
+                
+                // Create new Tree-ViewItem for our new child
                 TreeViewItem childTVI = new TreeViewItem()
                 {
                     // Add the title
@@ -164,6 +199,13 @@ namespace VirtualFAT
                 };
 
                 ContextMenu contextMenu = new ContextMenu();
+                MenuItem menuItemOpen = new MenuItem()
+                {
+                    Header = "Open",
+                    Tag = child.Tag
+                };
+                menuItemOpen.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickOpenFile));
+                contextMenu.Items.Add(menuItemOpen);
                 MenuItem menuItemDelete = new MenuItem()
                 {
                     Header = "Delete",
@@ -171,6 +213,7 @@ namespace VirtualFAT
                 };
                 menuItemDelete.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickDelete));
                 contextMenu.Items.Add(menuItemDelete);
+
                 childTVI.ContextMenu = contextMenu;
 
                 // Add new child Tree-ViewItem to the parant
@@ -181,7 +224,8 @@ namespace VirtualFAT
                 notBad.Title += " " + docName; 
                 if (notBad.ShowDialog() == true)
                 {
-                    string textContent = notBad.TextContent.Text;
+                    child.Document.Content = notBad.TextContent.Text;
+                    child.Document.LastModification = DateTime.UtcNow;
                 }
             }
         }
@@ -199,6 +243,13 @@ namespace VirtualFAT
 
                 // Find parant of item user want to delete in the Tree
                 TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
+
+                if (parantTVI.Items[0] == null)
+                {
+                    // Remove the dummy child
+                    parantTVI.Items.Clear();
+                }
+
                 // Create new Tree-ViewItem for our new child
                 TreeViewItem childTVI = new TreeViewItem()
                 {
@@ -228,6 +279,13 @@ namespace VirtualFAT
                 };
                 menuItemDelete.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickDelete));
                 contextMenu.Items.Add(menuItemDelete);
+                MenuItem menuItemCreateFile = new MenuItem()
+                {
+                    Header = "Create file",
+                    Tag = child.Tag
+                };
+                menuItemCreateFile.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFile));
+                contextMenu.Items.Add(menuItemCreateFile);
 
                 childTVI.ContextMenu = contextMenu;
                 // Listen out for item being expended

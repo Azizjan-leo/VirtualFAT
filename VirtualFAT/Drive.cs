@@ -4,6 +4,22 @@ using System.Linq;
 
 namespace VirtualFAT
 {
+    public class Document
+    {
+        public int Id { get; set; }
+        public string Content { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime LastModification { get; set; }
+        // Let's link the document to its tree-item
+        public TreeItem Parant { get; set; }
+
+        public Document(int id, TreeItem parant)
+        {
+            Id = id;
+            Parant = parant;
+            DateCreated = LastModification = DateTime.Now;
+        }
+    }
     public class TreeItem
     {
         public int Id { get; set; }
@@ -12,7 +28,7 @@ namespace VirtualFAT
         public string Tag { get; set; } // Path to this item. I.e. F:\Collage\
 
         public List<TreeItem> Childs { get; set; } // Inner Folders or Files
-
+        public Document Document{ get; set; } // To store documnt info like text and attributes
         public TreeItem(int id, ItemType itemType, string name, string tag)
         {
             Id = id;
@@ -21,6 +37,7 @@ namespace VirtualFAT
             Tag = tag;
             Childs = new List<TreeItem>();
         }
+
         /// <summary>
         /// Finds a TreeItem by its id
         /// </summary>

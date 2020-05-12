@@ -10,9 +10,10 @@ namespace VirtualFAT
     public static class FakeOS
     {
         static int Ids = 0;
+        static int DocIds = 0;
         //
         public static TreeItem Volume { get; set; } = new TreeItem(Ids++,ItemType.drive,"Артемий", "Артемий:\\");
-
+        public static List<Document> Docs { get; set; } = new List<Document>();
 
         public static TreeItem AddDirectory(string name, ItemType itemType, int parantId)
         {
@@ -20,6 +21,13 @@ namespace VirtualFAT
             TreeItem parant = Volume.GetTreeItem(parantId);
             // Create new TreeItem
             var child = new TreeItem(Ids++, itemType, name, parant.Tag + name);
+            // Create document if it is a file
+            if (itemType == ItemType.file)
+            {
+                var doc = new Document(DocIds++, child);
+                child.Document = doc;
+                Docs.Add(doc);
+            }
             // Add new diractory to the parant
             parant.Childs.Add(child);
             // Return created child
