@@ -48,6 +48,13 @@ namespace VirtualFAT
             };
             menuItemCreate.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
             contextMenu.Items.Add(menuItemCreate);
+            MenuItem menuItemCreateFile = new MenuItem()
+            {
+                Header = "Create new file",
+                Tag = FakeOS.Volume.Tag
+            };
+            menuItemCreateFile.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFile));
+            contextMenu.Items.Add(menuItemCreateFile);
             treeViewItem.ContextMenu = contextMenu;
             // Listen out for item being expended
             treeViewItem.Expanded += TreeItem_Expanded;
@@ -107,6 +114,13 @@ namespace VirtualFAT
                     };
                     menuItemCreate.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
                     contextMenu.Items.Add(menuItemCreate);
+                    MenuItem menuItemCreateFile = new MenuItem()
+                    {
+                        Header = "Create new file",
+                        Tag = dir.Tag
+                    };
+                    menuItemCreateFile.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFile));
+                    contextMenu.Items.Add(menuItemCreateFile);
                     newChildTreeViewItem.Expanded += TreeItem_Expanded;
                 }
                 // Bind the handler of removing items
@@ -119,7 +133,58 @@ namespace VirtualFAT
             if(treeViewItem.Name == ItemType.folder.ToString())
                 treeViewItem.Name = "folderOpen";
         }
+        #region ContextHandlers
+        private void MenuItem_ClickCreateFile(object sender, RoutedEventArgs e)
+        {
+            string docName;
 
+            var dialog = new EnterFolderName();
+            dialog.Message.Text = "Enter document name";
+            if (dialog.ShowDialog() == true)
+            {
+                docName = dialog.ResponseText;
+                var menuItem = sender as MenuItem;
+
+                // Find the parant from OS
+                TreeItem parant = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+                // Create our new child and put it among the parants children
+                TreeItem child = FakeOS.AddDirectory(docName, ItemType.file, parant.Id);
+
+                // Find parant of item user want to delete in the Tree
+                TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
+                                                                                                                        // Create new Tree-ViewItem for our new child
+                TreeViewItem childTVI = new TreeViewItem()
+                {
+                    // Add the title
+                    Header = child.Name,
+                    // Add the path
+                    Tag = child.Tag,
+                    // Name for image
+                    Name = "Id" + child.Id.ToString()
+                };
+
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem menuItemDelete = new MenuItem()
+                {
+                    Header = "Delete",
+                    Tag = child.Tag
+                };
+                menuItemDelete.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickDelete));
+                contextMenu.Items.Add(menuItemDelete);
+                childTVI.ContextMenu = contextMenu;
+
+                // Add new child Tree-ViewItem to the parant
+                parantTVI.Items.Add(childTVI);
+                FolderView.UpdateLayout();
+
+                var notBad = new NotBad();
+                notBad.Title += " " + docName; 
+                if (notBad.ShowDialog() == true)
+                {
+                    string textContent = notBad.TextContent.Text;
+                }
+            }
+        }
         private void MenuItem_ClickCreateFolder(object sender, RoutedEventArgs e)
         {
             var dialog = new EnterFolderName();
@@ -203,6 +268,7 @@ namespace VirtualFAT
             }
 
         }
+        #endregion
         #endregion
 
     }

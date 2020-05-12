@@ -11,7 +11,7 @@
         Icon="Images/fat32-formatter.png"
         Height="450" Width="800">
     <Grid>
-        <TreeView x:Name="FolderView">
+        <TreeView x:Name="FolderView" HorizontalAlignment="Left" Width="139">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="HeaderTemplate">
@@ -34,5 +34,8 @@
                 </Style>
             </TreeView.Resources>
         </TreeView>
+        <StackPanel x:Name="Content" Height="310" Margin="174,40,0,0" VerticalAlignment="Top" Width="564">
+            
+        </StackPanel>
     </Grid>
 </Window>

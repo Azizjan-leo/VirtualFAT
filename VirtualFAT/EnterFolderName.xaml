@@ -9,7 +9,7 @@
         Title="Artemiy OS" Height="109.459" Width="290.927">
     <Grid>
         <StackPanel>
-            <TextBlock Text="Enter folder name" />
+            <TextBlock x:Name="Message" Text="Enter folder name" />
             <TextBox x:Name="ResponseTextBox" />
             <Button Content="OK" Click="OKButton_Click" />
         </StackPanel>
