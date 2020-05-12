@@ -11,7 +11,9 @@
         Icon="Images/fat32-formatter.png"
         Height="450" Width="800">
     <Grid>
-        <TreeView x:Name="FolderView" HorizontalAlignment="Left" Width="139">
+        <TreeView x:Name="FolderView" HorizontalAlignment="Left" Width="139"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="HeaderTemplate">

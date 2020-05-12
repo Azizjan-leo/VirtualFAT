@@ -60,11 +60,11 @@ namespace VirtualFAT
             // Add an item to the main tree
             FolderView.Items.Add(treeViewItem);
         }
-
+        #endregion
         /// <summary>
         /// When a disk/folder is expanded find sub folders/files
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="sender">TreeViewItem</param>
         /// <param name="e"></param>
         private void TreeItem_Expanded(object sender, RoutedEventArgs e)
         {
@@ -142,6 +142,8 @@ namespace VirtualFAT
                 treeViewItem.Name = "folderOpen";
         }
 
+
+        #region ContextHandlers
         private void MenuItem_ClickOpenFile(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
@@ -157,9 +159,6 @@ namespace VirtualFAT
                 treeItem.Document.LastModification = DateTime.UtcNow;
             }
         }
-        #region AppendContext
-        #endregion
-        #region ContextHandlers
         private void MenuItem_ClickCreateFile(object sender, RoutedEventArgs e)
         {
             string docName;
@@ -180,13 +179,12 @@ namespace VirtualFAT
                 // Find parant of item user want to delete in the Tree
                 TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
                                                                                                                         // Exit if the item contains data
-                if (parantTVI.Items[0] == null)
+                if (parantTVI.Items.Count == 1 && parantTVI.Items[0] == null)
                 {
                     // Remove the dummy child
                     parantTVI.Items.Clear();
                 }
 
-                
                 // Create new Tree-ViewItem for our new child
                 TreeViewItem childTVI = new TreeViewItem()
                 {
@@ -244,7 +242,7 @@ namespace VirtualFAT
                 // Find parant of item user want to delete in the Tree
                 TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
 
-                if (parantTVI.Items[0] == null)
+                if (parantTVI.Items.Count == 1 && parantTVI.Items[0] == null)
                 {
                     // Remove the dummy child
                     parantTVI.Items.Clear();
@@ -296,7 +294,6 @@ namespace VirtualFAT
                 FolderView.UpdateLayout();
             }
         }
-
         private void MenuItem_ClickDelete(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
@@ -327,7 +324,5 @@ namespace VirtualFAT
 
         }
         #endregion
-        #endregion
-
     }
 }
