@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace VirtualFAT
 {
@@ -33,7 +34,7 @@ namespace VirtualFAT
                 Name = "Id" + FakeOS.Volume.Id.ToString()
 
             };
-
+      
             // Add a dummy child to the root Tree-View Item
             treeViewItem.Items.Add(null);
 
@@ -52,6 +53,13 @@ namespace VirtualFAT
             };
             menuItemCreateFile.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFile));
             contextMenu.Items.Add(menuItemCreateFile);
+            MenuItem menuItemRename = new MenuItem()
+            {
+                Header = "Rename",
+                Tag = FakeOS.Volume.Tag
+            };
+            menuItemRename.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickRename));
+            contextMenu.Items.Add(menuItemRename);
             treeViewItem.ContextMenu = contextMenu;
 
             // Listen out for item being expended
@@ -60,6 +68,8 @@ namespace VirtualFAT
             // Add an item to the main tree
             FolderView.Items.Add(treeViewItem);
         }
+
+        
         #endregion
         /// <summary>
         /// When a disk/folder is expanded find sub folders/files
@@ -101,6 +111,13 @@ namespace VirtualFAT
                     Header = "Delete",
                     Tag = dir.Tag
                 };
+                MenuItem menuItemRename = new MenuItem()
+                {
+                    Header = "Rename",
+                    Tag = FakeOS.Volume.Tag
+                };
+                menuItemRename.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickRename));
+                contextMenu.Items.Add(menuItemRename);
                 if (dir.Type == ItemType.folder || dir.Type == ItemType.drive)
                 {
                     newChildTreeViewItem.Items.Add(null);
@@ -141,9 +158,42 @@ namespace VirtualFAT
             if(treeViewItem.Name == ItemType.folder.ToString())
                 treeViewItem.Name = "folderOpen";
         }
-
-
         #region ContextHandlers
+        private void MenuItem_ClickRename(object sender, RoutedEventArgs e)
+        {
+            var dialog = new EnterFolderName();
+            dialog.Message.Text = "Enter new name";
+            if (dialog.ShowDialog() == true)
+            {
+                var menuItem = sender as MenuItem;
+
+                // Find the treeItem from OS
+                TreeItem treeItem = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+                treeItem.Name = dialog.ResponseText;
+
+                //// Find treeViewItem of item user want to rename in the Tree
+                TreeViewItem itemTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + treeItem.Id); //FolderView.Items.GetItemAt(0);
+                if (itemTVI.Tag.ToString().Count(f => f == '\\') == 1)// So it is the volume
+                {
+                    treeItem.Tag = treeItem.Name + ":\\";
+                    itemTVI.Tag = treeItem.Tag;
+                }
+                else
+                {
+                    treeItem.Tag = treeItem.Tag.Substring(0, treeItem.Tag.LastIndexOf('\\') + 1);
+                    treeItem.Tag += treeItem.Name;
+
+
+                }
+                itemTVI.Header = treeItem.Name;
+                foreach (MenuItem item in itemTVI.ContextMenu.Items)
+                {
+                    item.Tag = itemTVI.Tag;
+                }
+                //itemTVI.Tag = treeItem.Tag;
+                FolderView.UpdateLayout();
+            }
+        }
         private void MenuItem_ClickOpenFile(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
@@ -202,6 +252,13 @@ namespace VirtualFAT
                     Header = "Open",
                     Tag = child.Tag
                 };
+                MenuItem menuItemRename = new MenuItem()
+                {
+                    Header = "Rename",
+                    Tag = child.Tag
+                };
+                menuItemRename.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickRename));
+                contextMenu.Items.Add(menuItemRename);
                 menuItemOpen.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickOpenFile));
                 contextMenu.Items.Add(menuItemOpen);
                 MenuItem menuItemDelete = new MenuItem()
@@ -270,6 +327,13 @@ namespace VirtualFAT
                 };
                 menuItemCreate.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickCreateFolder));
                 contextMenu.Items.Add(menuItemCreate);
+                MenuItem menuItemRename = new MenuItem()
+                {
+                    Header = "Rename",
+                    Tag = child.Tag
+                };
+                menuItemRename.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickRename));
+                contextMenu.Items.Add(menuItemRename);
                 MenuItem menuItemDelete = new MenuItem()
                 {
                     Header = "Delete",
