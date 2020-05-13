@@ -16,7 +16,6 @@ namespace VirtualFAT
             get { return ResponseTextBox.Text; }
             set { ResponseTextBox.Text = value; }
         }
-
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;

@@ -158,6 +158,7 @@ namespace VirtualFAT
             if(treeViewItem.Name == ItemType.folder.ToString())
                 treeViewItem.Name = "folderOpen";
         }
+
         #region ContextHandlers
         private void MenuItem_ClickRename(object sender, RoutedEventArgs e)
         {
@@ -166,31 +167,35 @@ namespace VirtualFAT
             if (dialog.ShowDialog() == true)
             {
                 var menuItem = sender as MenuItem;
-
+                
                 // Find the treeItem from OS
                 TreeItem treeItem = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
-                treeItem.Name = dialog.ResponseText;
+
 
                 //// Find treeViewItem of item user want to rename in the Tree
                 TreeViewItem itemTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + treeItem.Id); //FolderView.Items.GetItemAt(0);
-                if (itemTVI.Tag.ToString().Count(f => f == '\\') == 1)// So it is the volume
+                if (itemTVI.Tag.ToString().IndexOf('\\') == itemTVI.Tag.ToString().Length - 1)// So it is the volume
                 {
-                    treeItem.Tag = treeItem.Name + ":\\";
-                    itemTVI.Tag = treeItem.Tag;
+                    treeItem.Tag = dialog.ResponseText + ":\\";
                 }
                 else
                 {
-                    treeItem.Tag = treeItem.Tag.Substring(0, treeItem.Tag.LastIndexOf('\\') + 1);
-                    treeItem.Tag += treeItem.Name;
-
-
+                    string newTag = treeItem.Tag.Substring(0, treeItem.Tag.LastIndexOf('\\') + 1) + dialog.ResponseText; 
+                    if (FakeOS.Volume.GetTreeItem(newTag) != null) // So item with this name already exists in the directory
+                    {
+                        MessageBox.Show(this, $"Item with name {dialog.ResponseText} already exists in the directory.",
+                             "Confirmation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    treeItem.Tag = newTag;
                 }
+                treeItem.Name = dialog.ResponseText;
                 itemTVI.Header = treeItem.Name;
+                itemTVI.Tag = treeItem.Tag;
                 foreach (MenuItem item in itemTVI.ContextMenu.Items)
                 {
                     item.Tag = itemTVI.Tag;
                 }
-                //itemTVI.Tag = treeItem.Tag;
                 FolderView.UpdateLayout();
             }
         }
@@ -222,7 +227,13 @@ namespace VirtualFAT
 
                 // Find the parant from OS
                 TreeItem parant = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
-               
+                string newTag = parant.Tag + '\\' + dialog.ResponseText;
+                if (FakeOS.Volume.GetTreeItem(newTag) != null) // So item with this name already exists in the directory
+                {
+                    MessageBox.Show(this, $"Item with name {dialog.ResponseText} already exists in the directory.",
+                         "Confirmation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
                 // Create our new child and put it among the parants children
                 TreeItem child = FakeOS.AddDirectory(docName, ItemType.file, parant.Id);
 
@@ -293,6 +304,15 @@ namespace VirtualFAT
 
                 // Find the parant from OS
                 TreeItem parant = FakeOS.Volume.GetTreeItem(menuItem.Tag.ToString());
+
+                string newTag = parant.Tag + '\\' + dialog.ResponseText;
+                if (FakeOS.Volume.GetTreeItem(newTag) != null) // So item with this name already exists in the directory
+                {
+                    MessageBox.Show(this, $"Item with name {dialog.ResponseText} already exists in the directory.",
+                         "Confirmation", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 // Create our new child and put it among the parants children
                 TreeItem child = FakeOS.AddDirectory(dialog.ResponseText, ItemType.folder, parant.Id);
 

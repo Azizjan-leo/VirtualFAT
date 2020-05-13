@@ -20,7 +20,7 @@ namespace VirtualFAT
             // Find parant
             TreeItem parant = Volume.GetTreeItem(parantId);
             // Create new TreeItem
-            var child = new TreeItem(Ids++, itemType, name, parant.Tag + name);
+            var child = new TreeItem(Ids++, itemType, name, parant.Tag + '\\' + name);
             // Create document if it is a file
             if (itemType == ItemType.file)
             {
