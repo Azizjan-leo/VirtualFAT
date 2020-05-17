@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VirtualFAT"
         mc:Ignorable="d"
+        ResizeMode="CanMinimize"
         Icon="Images/fat32-formatter.png"
         Title="Artemiy OS" Height="109.459" Width="290.927">
     <Grid>
         <StackPanel>
             <TextBlock x:Name="Message" Text="Enter folder name" />
-            <TextBox x:Name="ResponseTextBox" />
-            <Button Content="OK" Click="OKButton_Click" />
+            <TextBox x:Name="ResponseTextBox" TextChanged="ResponseTextBox_TextChanged" />
+            <Button Content="OK" IsEnabled="False" x:Name="OkButton" Click="OKButton_Click" />
         </StackPanel>
     </Grid>
 </Window>

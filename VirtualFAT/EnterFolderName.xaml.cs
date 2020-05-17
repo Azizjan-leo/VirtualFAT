@@ -20,5 +20,10 @@ namespace VirtualFAT
         {
             DialogResult = true;
         }
+
+        private void ResponseTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            OkButton.IsEnabled = !string.IsNullOrEmpty(ResponseText);
+        }
     }
 }

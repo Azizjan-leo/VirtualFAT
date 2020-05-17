@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Linq;
 
 namespace VirtualFAT
 {
@@ -13,7 +12,12 @@ namespace VirtualFAT
     {
         public MainWindow()
         {
-            InitializeComponent();
+            var dialog = new DriveIO(false);
+            
+            if (dialog.ShowDialog() == true)
+            {
+                InitializeComponent();
+            } 
         }
 
         #region On Loaded
@@ -24,6 +28,7 @@ namespace VirtualFAT
         /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+        
             // Create a Tree-View Item to represent Volume
             var treeViewItem = new TreeViewItem {
                 // Add the title

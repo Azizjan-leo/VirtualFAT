@@ -1,0 +1,33 @@
+﻿<Window x:Class="VirtualFAT.DriveIO"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VirtualFAT"
+        mc:Ignorable="d"
+        Icon="Images/fat32-formatter.png"
+        ResizeMode="CanMinimize"
+        Title="Artemiy OS" Height="280" Width="250" Closing="Window_Closing">
+    <Grid>
+        <StackPanel>
+            <TextBlock Margin="0, 10, 0, 5" Text="Capacity (MB):" />
+            <ComboBox x:Name="Capacity">
+                <ComboBoxItem Content="256" IsSelected="True"></ComboBoxItem>
+                <ComboBoxItem Content="512"></ComboBoxItem>
+                <ComboBoxItem Content="1024"></ComboBoxItem>
+                <ComboBoxItem Content="2048"></ComboBoxItem>
+                <ComboBoxItem Content="34359720775"></ComboBoxItem>
+            </ComboBox>
+            <TextBlock Margin="0, 20, 0, 5" Text="Allocation unit size (KB):" />
+            <ComboBox x:Name="AllocationUnitSize">
+                <ComboBoxItem Content="4" IsSelected="True"></ComboBoxItem>
+                <ComboBoxItem Content="8"></ComboBoxItem>
+                <ComboBoxItem Content="16"></ComboBoxItem>
+                <ComboBoxItem Content="32"></ComboBoxItem>
+            </ComboBox>
+            <TextBlock Margin="0, 10, 0, 5" Text="Volume label:" />
+            <TextBox Height="20" x:Name="VolumeLabel" Text="Artemiy"/>
+            <Button Margin="0, 25, 0, 5" Content="Format" Click="OKButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

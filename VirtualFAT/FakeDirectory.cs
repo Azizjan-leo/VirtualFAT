@@ -13,6 +13,7 @@ namespace VirtualFAT
         static int DocIds = 0;
         //
         public static TreeItem Volume { get; set; } = new TreeItem(Ids++,ItemType.drive,"Артемий", "Артемий:\\");
+        
         public static List<Document> Docs { get; set; } = new List<Document>();
 
         public static TreeItem AddDirectory(string name, ItemType itemType, int parantId)

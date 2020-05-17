@@ -58,6 +58,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DriveIO.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EnterFolderName.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -70,11 +74,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Cluster.cs" />
     <Compile Include="Drive.cs" />
+    <Compile Include="DriveIO.xaml.cs">
+      <DependentUpon>DriveIO.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EnterFolderName.xaml.cs">
       <DependentUpon>EnterFolderName.xaml</DependentUpon>
     </Compile>
     <Compile Include="FakeDirectory.cs" />
+    <Compile Include="IntToBase.cs" />
     <Compile Include="HeaderToImageConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
