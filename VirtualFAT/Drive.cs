@@ -70,11 +70,11 @@ namespace VirtualFAT
                 }
             }
 
-        //    for (int i = 0; i < Clusters.Length; i++)
-        //    {
-        //        var tmp = Clusters[i];
-        //    }
-        //}
+            //    for (int i = 0; i < Clusters.Length; i++)
+            //    {
+            //        var tmp = Clusters[i];
+            //    }
+        }
     }
 
     public class Cluster
