@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace VirtualFAT
 {
@@ -12,7 +10,7 @@ namespace VirtualFAT
         static int Ids = 0;
         static int DocIds = 0;
         //
-        public static TreeItem Volume { get; set; } = new TreeItem(Ids++,ItemType.drive,"Артемий", "Артемий:\\");
+        public static TreeItem Volume { get; set; } = new TreeItem(Ids++,ItemType.drive,"Artemiy", "Artemiy:\\");
         
         public static List<Document> Docs { get; set; } = new List<Document>();
 
@@ -22,12 +20,17 @@ namespace VirtualFAT
             TreeItem parant = Volume.GetTreeItem(parantId);
             // Create new TreeItem
             var child = new TreeItem(Ids++, itemType, name, parant.Tag + '\\' + name);
+            
             // Create document if it is a file
             if (itemType == ItemType.file)
             {
                 var doc = new Document(DocIds++, child);
                 child.Document = doc;
                 Docs.Add(doc);
+            }
+            else
+            {
+                Drive.Write(child, name, true);
             }
             // Add new diractory to the parant
             parant.Childs.Add(child);

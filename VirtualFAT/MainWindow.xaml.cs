@@ -12,10 +12,8 @@ namespace VirtualFAT
     {
         public MainWindow()
         {
-            var dialog = new DriveIO(false);
-            
-            if (dialog.ShowDialog() == true)
             {
+                Drive.Format(256, 4, "Artemiy");
                 InitializeComponent();
             } 
         }
@@ -65,6 +63,13 @@ namespace VirtualFAT
             };
             menuItemRename.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickRename));
             contextMenu.Items.Add(menuItemRename);
+            MenuItem menuItemFormat = new MenuItem()
+            {
+                Header = "Format",
+                Tag = FakeOS.Volume.Tag
+            };
+            menuItemFormat.AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(MenuItem_ClickFormat));
+            contextMenu.Items.Add(menuItemFormat);
             treeViewItem.ContextMenu = contextMenu;
 
             // Listen out for item being expended
@@ -165,6 +170,22 @@ namespace VirtualFAT
         }
 
         #region ContextHandlers
+        private void MenuItem_ClickFormat(object sender, RoutedEventArgs e)
+        {
+            var dialog = new DriveIO(true);
+
+            if(dialog.ShowDialog() == true)
+            {
+                //// Find treeViewItem of item user want to rename in the Tree
+                TreeViewItem itemTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id0"); //FolderView.Items.GetItemAt(0);
+                itemTVI.Header = FakeOS.Volume.Name;
+                itemTVI.Tag = FakeOS.Volume.Tag;
+                foreach (MenuItem item in itemTVI.ContextMenu.Items)
+                {
+                    item.Tag = itemTVI.Tag;
+                }
+            }
+        }
         private void MenuItem_ClickRename(object sender, RoutedEventArgs e)
         {
             var dialog = new EnterFolderName();
@@ -296,6 +317,7 @@ namespace VirtualFAT
                 if (notBad.ShowDialog() == true)
                 {
                     child.Document.Content = notBad.TextContent.Text;
+                    Drive.Write(child, child.Document.Content, false);
                     child.Document.LastModification = DateTime.UtcNow;
                 }
             }

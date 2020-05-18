@@ -28,6 +28,53 @@ namespace VirtualFAT
             }
             Clusters[0].TreeItem = FakeOS.Volume;
         }
+
+        public static void Write(TreeItem treeItem, string data, bool isDirr)
+        {
+            if (isDirr)
+            {
+                for (int i = 1; i < Clusters.Length; i++)
+                {
+                    if (Clusters[i].Data == null)
+                    {
+                        Clusters[i].Data = new Data(null, Clusters[i].Base32Address, data);
+                        Clusters[i].TreeItem = treeItem;
+                        treeItem.FirstCluster = Clusters[i];
+                        return;
+                    }
+                }
+            }
+            string[] words = data.Split(' ');
+            Data temp = null;
+            int w = 0;
+            int point = 1;
+            for (int i = 1; i < Clusters.Length; i++)
+            {
+                if (Clusters[i].Data == null)
+                {
+                    Clusters[i].Data = new Data(temp, Clusters[i].Base32Address, words[w++]);
+                    temp = Clusters[i].Data;
+                    Clusters[i].TreeItem = treeItem;
+                    treeItem.FirstCluster = Clusters[i];
+                    point = i;
+                    break;
+                }
+            }
+            for (int i = point; i < Clusters.Length && w < words.Length; i++)
+            {
+                if(Clusters[i].Data == null)
+                {
+                    Clusters[i].Data = new Data(temp, Clusters[i].Base32Address, words[w++]);
+                    temp.Next = Clusters[i].Data.Curr;
+                    temp = Clusters[i].Data;
+                }
+            }
+
+        //    for (int i = 0; i < Clusters.Length; i++)
+        //    {
+        //        var tmp = Clusters[i];
+        //    }
+        //}
     }
 
     public class Cluster
@@ -41,6 +88,7 @@ namespace VirtualFAT
         {
             IntAddress = intAddress;
             Base32Address = IntToBase.DoIt(32, IntAddress);
+            Data = null;
         }
     }
 
@@ -51,5 +99,13 @@ namespace VirtualFAT
         public string Curr { get; set; }
         public string Next { get; set; }
         public string Content { get; set; }
+
+        public Data(Data prev, string curr, string content)
+        {
+            Prev = prev?.Curr;
+            Curr = curr;
+            Content = content;
+            IsDirr = false;
+        }
     }
 }

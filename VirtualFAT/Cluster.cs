@@ -26,7 +26,7 @@ namespace VirtualFAT
         public string Name { get; set; } // i.e. Folder123 or File321
         public ItemType Type { get; set; }  // Folder or File
         public string Tag { get; set; } // Path to this item. I.e. F:\Collage\
-
+        public Cluster FirstCluster { get; set; }
         public List<TreeItem> Childs { get; set; } // Inner Folders or Files
         public Document Document{ get; set; } // To store documnt info like text and attributes
         public TreeItem(int id, ItemType itemType, string name, string tag)
