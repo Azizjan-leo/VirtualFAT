@@ -26,18 +26,20 @@ namespace VirtualFAT
             {
                 Clusters[i] = new Cluster(i);
             }
+    
             Clusters[0].TreeItem = FakeOS.Volume;
+            Write(Clusters[0].TreeItem, FakeOS.Volume.Name, true);
         }
 
         public static void Write(TreeItem treeItem, string data, bool isDirr)
         {
             if (isDirr)
             {
-                for (int i = 1; i < Clusters.Length; i++)
+                for (int i = 0; i < Clusters.Length; i++)
                 {
                     if (Clusters[i].Data == null)
                     {
-                        Clusters[i].Data = new Data(null, Clusters[i].Base32Address, data);
+                        Clusters[i].Data = new Data(null, Clusters[i].HexAddress, data);
                         Clusters[i].TreeItem = treeItem;
                         treeItem.FirstCluster = Clusters[i];
                         return;
@@ -52,7 +54,7 @@ namespace VirtualFAT
             {
                 if (Clusters[i].Data == null)
                 {
-                    Clusters[i].Data = new Data(temp, Clusters[i].Base32Address, words[w++]);
+                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++]);
                     temp = Clusters[i].Data;
                     Clusters[i].TreeItem = treeItem;
                     treeItem.FirstCluster = Clusters[i];
@@ -64,7 +66,7 @@ namespace VirtualFAT
             {
                 if(Clusters[i].Data == null)
                 {
-                    Clusters[i].Data = new Data(temp, Clusters[i].Base32Address, words[w++]);
+                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++]);
                     temp.Next = Clusters[i].Data.Curr;
                     temp = Clusters[i].Data;
                 }
@@ -79,7 +81,7 @@ namespace VirtualFAT
 
     public class Cluster
     {
-        public string Base32Address { get; set; }
+        public string HexAddress { get; set; }
         public int IntAddress { get; set; }
         public Data Data { get; set; }
         public TreeItem TreeItem { get; set; }
@@ -87,7 +89,7 @@ namespace VirtualFAT
         public Cluster(int intAddress)
         {
             IntAddress = intAddress;
-            Base32Address = IntToBase.DoIt(32, IntAddress);
+            HexAddress = IntAddress.ToString("X2");
             Data = null;
         }
     }

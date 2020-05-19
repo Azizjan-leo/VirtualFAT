@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace VirtualFAT
 {
@@ -10,11 +11,54 @@ namespace VirtualFAT
     /// </summary>
     public partial class MainWindow : Window
     {
+        private void DrawGrid()
+        {
+            Content.Children.Clear();
+            Content.RowDefinitions.Clear();
+            Content.ColumnDefinitions.Clear();
+            // Create Columns
+            for (int i = 0; i < 12; i++) 
+            {
+                Content.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
+            int counter = 0;
+            // Create Rows
+            for (int i = 0; i < 50; i++)
+            {
+                Content.RowDefinitions.Add(new RowDefinition () { Height = new GridLength(30) });
+
+                // Add info
+                for (int j = 0; j < 12; j++)
+                {
+                    if (Drive.Clusters[counter] != null)
+                    {
+                        var cluster = Drive.Clusters[counter++];
+                        var cell = new StackPanel();
+                        var tb = new TextBlock();
+                        tb.FontSize = 10;
+                        tb.HorizontalAlignment = HorizontalAlignment.Center;
+                        tb.Text = cluster.HexAddress;
+                        
+                        if (cluster.Data != null)
+                        {
+                            tb.Text += $"\n{cluster.Data.Content}";
+                        }
+                        Grid.SetRow(cell, i);
+                        Grid.SetColumn(cell, j);
+                        cell.Children.Add(tb);
+                        Content.Children.Add(cell);
+                    }
+                }
+
+            }
+        }
         public MainWindow()
         {
             {
                 Drive.Format(256, 4, "Artemiy");
                 InitializeComponent();
+                DrawGrid();
             } 
         }
 
@@ -184,6 +228,7 @@ namespace VirtualFAT
                 {
                     item.Tag = itemTVI.Tag;
                 }
+                DrawGrid();
             }
         }
         private void MenuItem_ClickRename(object sender, RoutedEventArgs e)

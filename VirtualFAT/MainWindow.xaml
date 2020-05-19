@@ -36,8 +36,9 @@
                 </Style>
             </TreeView.Resources>
         </TreeView>
-        <StackPanel x:Name="Content" Height="310" Margin="174,40,0,0" VerticalAlignment="Top" Width="564">
-            
-        </StackPanel>
+            <ScrollViewer Margin="159,27,27,20" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto">
+                <Grid  x:Name="Content" ShowGridLines="True" Background="LightGray"></Grid>
+            </ScrollViewer>
+          
     </Grid>
 </Window>
