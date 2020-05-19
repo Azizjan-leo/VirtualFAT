@@ -49,9 +49,11 @@ namespace VirtualFAT
                             }
                         }
                         DialogResult = true;
+                        Changes = false;
                         break;
                     case
                         MessageBoxResult.No:
+                        Changes = false;
                         Close();
                         break;
                     case
@@ -60,12 +62,49 @@ namespace VirtualFAT
                 }
             }
             else
+            {
+                Changes = false;
                 Close();
+            }
+              
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             Changes = true;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Changes == true)
+            {
+                MessageBoxResult result = MessageBox.Show($"Do you want to save changes?", "Artemiy OS", MessageBoxButton.YesNoCancel);
+                switch (result)
+                {
+                    case
+                        MessageBoxResult.Yes:
+                        if (IsNewDoc)
+                        {
+                            var dialog = new EnterFolderName();
+                            dialog.Message.Text = "Enter document name";
+                            if (dialog.ShowDialog() == true)
+                            {
+                                DocName = dialog.ResponseText;
+                            }
+                        }
+                        DialogResult = true;
+                        e.Cancel = false;
+                        break;
+                    case
+                        MessageBoxResult.No:
+                        e.Cancel = false;
+                        break;
+                    case
+                        MessageBoxResult.Cancel:
+                        e.Cancel = true;
+                        break;
+                }
+            }
         }
     }
 }

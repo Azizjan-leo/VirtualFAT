@@ -17,7 +17,7 @@ namespace VirtualFAT
             Content.RowDefinitions.Clear();
             Content.ColumnDefinitions.Clear();
             // Create Columns
-            for (int i = 0; i < 12; i++) 
+            for (int i = 0; i < 10; i++) 
             {
                 Content.ColumnDefinitions.Add(new ColumnDefinition());
             }
@@ -26,10 +26,10 @@ namespace VirtualFAT
             // Create Rows
             for (int i = 0; i < 50; i++)
             {
-                Content.RowDefinitions.Add(new RowDefinition () { Height = new GridLength(45) });
+                Content.RowDefinitions.Add(new RowDefinition () { Height = new GridLength(55) });
 
                 // Add info
-                for (int j = 0; j < 12; j++)
+                for (int j = 0; j < 10; j++)
                 {
                     if (Drive.Clusters[counter] != null)
                     {
@@ -39,15 +39,18 @@ namespace VirtualFAT
                         tb.FontSize = 10;
                         tb.TextAlignment = TextAlignment.Center;
                      
-                        tb.Text = cluster.HexAddress;
+                        tb.Text = cluster.HexAddress + "\n";
                         
                         if (cluster.Data != null)
                         {
-                            tb.Text += $"\n{cluster.Data.Content}";
                             if (cluster.TreeItem != null && cluster.TreeItem.Type == ItemType.file)
                             {
-                                tb.Text += $"\n{cluster.TreeItem.Name}";
+                                tb.Text += $"{cluster.TreeItem.Name}\n";
                             }
+                            tb.Text += $"{cluster.Data.Content}\n";
+                            tb.Text +=  cluster.Data.Prev ??  "FFFF";
+                            tb.Text += "||";
+                            tb.Text += cluster.Data.Next ?? "FFFF";
                         }
                        
                         Grid.SetRow(cell, i);
