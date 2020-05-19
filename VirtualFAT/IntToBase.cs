@@ -39,9 +39,11 @@ namespace VirtualFAT
             }
             char[] res = s.ToCharArray();
 
+            
             // Reverse the result 
             Array.Reverse(res);
-            return new String(res);
+            string result = new String(res);
+            return result == "" ? "0" : result; // Return 0 if res is empty
         }
     }
 }

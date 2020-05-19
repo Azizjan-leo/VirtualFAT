@@ -52,7 +52,7 @@ namespace VirtualFAT
             int point = 1;
             for (int i = 1; i < Clusters.Length; i++)
             {
-                if (Clusters[i].Data == null)
+                if (Clusters[i].Data == null) // So it is empty
                 {
                     Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++]);
                     temp = Clusters[i].Data;
@@ -71,11 +71,6 @@ namespace VirtualFAT
                     temp = Clusters[i].Data;
                 }
             }
-
-            //    for (int i = 0; i < Clusters.Length; i++)
-            //    {
-            //        var tmp = Clusters[i];
-            //    }
         }
     }
 
@@ -89,7 +84,7 @@ namespace VirtualFAT
         public Cluster(int intAddress)
         {
             IntAddress = intAddress;
-            HexAddress = IntAddress.ToString("X2");
+            HexAddress = IntToBase.DoIt(32, intAddress);// IntAddress.ToString("X2");
             Data = null;
         }
     }

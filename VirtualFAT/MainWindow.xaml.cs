@@ -26,7 +26,7 @@ namespace VirtualFAT
             // Create Rows
             for (int i = 0; i < 50; i++)
             {
-                Content.RowDefinitions.Add(new RowDefinition () { Height = new GridLength(30) });
+                Content.RowDefinitions.Add(new RowDefinition () { Height = new GridLength(45) });
 
                 // Add info
                 for (int j = 0; j < 12; j++)
@@ -44,23 +44,27 @@ namespace VirtualFAT
                         if (cluster.Data != null)
                         {
                             tb.Text += $"\n{cluster.Data.Content}";
+                            if (cluster.TreeItem != null && cluster.TreeItem.Type == ItemType.file)
+                            {
+                                tb.Text += $"\n{cluster.TreeItem.Name}";
+                            }
                         }
+                       
                         Grid.SetRow(cell, i);
                         Grid.SetColumn(cell, j);
                         cell.Children.Add(tb);
                         Content.Children.Add(cell);
                     }
+                   
                 }
 
             }
         }
         public MainWindow()
         {
-            {
-                Drive.Format(256, 4, "Artemiy");
-                InitializeComponent();
-                DrawGrid();
-            } 
+            Drive.Format(256, 4, "Artemiy");
+            InitializeComponent();
+            DrawGrid();
         }
 
         #region On Loaded
@@ -365,7 +369,9 @@ namespace VirtualFAT
                     child.Document.Content = notBad.TextContent.Text;
                     Drive.Write(child, child.Document.Content, false);
                     child.Document.LastModification = DateTime.UtcNow;
+                    DrawGrid();
                 }
+
             }
         }
         private void MenuItem_ClickCreateFolder(object sender, RoutedEventArgs e)
