@@ -43,14 +43,24 @@ namespace VirtualFAT
                         
                         if (cluster.Data != null)
                         {
-                            if (cluster.TreeItem != null && cluster.TreeItem.Type == ItemType.file)
+                            if (cluster.TreeItem != null)
                             {
                                 tb.Text += $"{cluster.TreeItem.Name}\n";
+                                if (cluster.TreeItem.Type == ItemType.file)
+                                {
+                                    tb.Text += $"{cluster.Data.Content}\n";
+                                    tb.Text += cluster.Data.Prev ?? "FFFF";
+                                    tb.Text += "||";
+                                    tb.Text += cluster.Data.Next ?? "FFFF";
+                                }
                             }
-                            tb.Text += $"{cluster.Data.Content}\n";
-                            tb.Text +=  cluster.Data.Prev ??  "FFFF";
-                            tb.Text += "||";
-                            tb.Text += cluster.Data.Next ?? "FFFF";
+                            else
+                            {
+                                tb.Text += $"{cluster.Data.Content}\n";
+                                tb.Text += cluster.Data.Prev ?? "FFFF";
+                                tb.Text += "||";
+                                tb.Text += cluster.Data.Next ?? "FFFF";
+                            }
                         }
                        
                         Grid.SetRow(cell, i);
@@ -276,6 +286,7 @@ namespace VirtualFAT
                     item.Tag = itemTVI.Tag;
                 }
                 FolderView.UpdateLayout();
+                DrawGrid();
             }
         }
         private void MenuItem_ClickOpenFile(object sender, RoutedEventArgs e)
