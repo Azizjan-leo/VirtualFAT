@@ -30,7 +30,7 @@ namespace VirtualFAT
             }
             else
             {
-                Drive.Write(child, name, true);
+                Drive.Write(parant, child, name, true);
             }
             // Add new diractory to the parant
             parant.Childs.Add(child);

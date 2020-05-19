@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace VirtualFAT
 {
@@ -381,7 +380,7 @@ namespace VirtualFAT
                 if (notBad.ShowDialog() == true)
                 {
                     child.Document.Content = notBad.TextContent.Text;
-                    Drive.Write(child, child.Document.Content, false);
+                    Drive.Write(parant, child, child.Document.Content, false);
                     child.Document.LastModification = DateTime.UtcNow;
                     DrawGrid();
                 }

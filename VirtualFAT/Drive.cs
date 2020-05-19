@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace VirtualFAT
 {
     public static class Drive
@@ -28,10 +30,12 @@ namespace VirtualFAT
             }
     
             Clusters[0].TreeItem = FakeOS.Volume;
-            Write(Clusters[0].TreeItem, FakeOS.Volume.Name, true);
+            Write(null, Clusters[0].TreeItem, FakeOS.Volume.Name, true);
         }
-        public static void Remove(TreeItem treeItem)
+       
+        public static void RemoveInnerItem(TreeItem treeItem)
         {
+
             for (int i = 1; i < Clusters.Length; i++)
             {
                 if (Clusters[i].TreeItem == treeItem) // So it is
@@ -49,7 +53,7 @@ namespace VirtualFAT
                             {
                                 next = Clusters[j].Data.Next;
                                 Clusters[j].Data = null;
-                                flag = j+1;
+                                flag = j + 1;
                                 break;
                             }
                         }
@@ -58,7 +62,28 @@ namespace VirtualFAT
                 }
             }
         }
-        public static void Write(TreeItem treeItem, string data, bool isDirr)
+        public static void Remove(TreeItem treeItem)
+        {
+            if (treeItem.FirstCluster.Data.IsDirr)
+            {
+                foreach (var item in treeItem.FirstCluster.Data.Dirs)
+                {
+                    for (int i = 1; i < Clusters.Length; i++)
+                    {
+                        if(Clusters[i]?.Data?.Curr == item)
+                        {
+                            if (Clusters[i].Data.IsDirr)
+                                Remove(Clusters[i].TreeItem);
+                            else
+                                RemoveInnerItem(Clusters[i].TreeItem);
+                        }
+                    }
+                }
+                RemoveInnerItem(treeItem);
+            }
+        }
+
+        public static void Write(TreeItem parant, TreeItem treeItem, string data, bool isDirr)
         {
             if (isDirr)
             {
@@ -66,8 +91,11 @@ namespace VirtualFAT
                 {
                     if (Clusters[i].Data == null)
                     {
-                        Clusters[i].Data = new Data(null, Clusters[i].HexAddress, data);
+                        Clusters[i].Data = new Data(null, Clusters[i].HexAddress, data, isDirr);
                         Clusters[i].TreeItem = treeItem;
+                        
+                        parant?.FirstCluster.Data.Dirs.Add(Clusters[i].HexAddress);
+                        
                         treeItem.FirstCluster = Clusters[i];
                         return;
                     }
@@ -79,13 +107,14 @@ namespace VirtualFAT
             int point = 1;
             for (int i = 1; i < Clusters.Length; i++)
             {
-                if (Clusters[i].Data == null) // So it is empty
+                if (Clusters[i].Data == null) // So it is empty and avalable to store our first cluster
                 {
-                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++]);
+                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++], isDirr);
                     temp = Clusters[i].Data;
                     Clusters[i].TreeItem = treeItem;
+                    parant?.FirstCluster.Data.Dirs.Add(Clusters[i].HexAddress);
                     treeItem.FirstCluster = Clusters[i];
-                    point = i;
+                    point = ++i;
                     break;
                 }
             }
@@ -93,7 +122,7 @@ namespace VirtualFAT
             {
                 if(Clusters[i].Data == null)
                 {
-                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++]);
+                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++],isDirr);
                     temp.Next = Clusters[i].Data.Curr;
                     temp = Clusters[i].Data;
                 }
@@ -123,13 +152,15 @@ namespace VirtualFAT
         public string Curr { get; set; }
         public string Next { get; set; }
         public string Content { get; set; }
+        public List<string> Dirs { get; set; }
 
-        public Data(Data prev, string curr, string content)
+        public Data(Data prev, string curr, string content, bool isDirr)
         {
             Prev = prev?.Curr;
             Curr = curr;
             Content = content;
-            IsDirr = false;
+            IsDirr = isDirr;
+            Dirs = new List<string>();
         }
     }
 }
