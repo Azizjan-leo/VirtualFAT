@@ -37,7 +37,8 @@ namespace VirtualFAT
                         var cell = new StackPanel();
                         var tb = new TextBlock();
                         tb.FontSize = 10;
-                        tb.HorizontalAlignment = HorizontalAlignment.Center;
+                        tb.TextAlignment = TextAlignment.Center;
+                     
                         tb.Text = cluster.HexAddress;
                         
                         if (cluster.Data != null)
