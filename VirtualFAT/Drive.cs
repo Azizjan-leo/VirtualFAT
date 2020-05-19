@@ -133,9 +133,83 @@ namespace VirtualFAT
             {
                 if(Clusters[i].Data == null)
                 {
-                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++],isDirr);
+                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++], isDirr);
                     temp.Next = Clusters[i].Data.Curr;
                     temp = Clusters[i].Data;
+                }
+            }
+        }
+
+        public static void EditFile(TreeItem treeItem, string data)
+        {
+            string[] words = data.Split(' ');
+
+            Data temp = null;
+            int w = 0;
+            int point = 1;
+            string next = "next";
+
+            // If it is an empty file
+            if (words[0] == "" && words.Length == 1)
+            {
+                for (int j = 1; j < Clusters.Length && next != null; j++)
+                {
+                    if (Clusters[j].TreeItem == treeItem) // So it is the one we're looking for :)
+                    {
+                        for (int i = j; i < Clusters.Length && next != null; i++)
+                        {
+
+                            next = Clusters[i].Data?.Next ?? null;
+                            Clusters[i].Data = null;
+                        }
+                        return;
+                    }
+                }
+            }
+
+
+            for (int i = 1; i < Clusters.Length; i++)
+            {
+                if (Clusters[i].TreeItem == treeItem) // So it is the one we're looking for :)
+                {
+                    next = Clusters[i]?.Data?.Next ?? string.Empty;
+                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++], false);
+                    temp = Clusters[i].Data;
+                    point = i;
+                    break;
+                }
+            }
+            for (int i = point + 1; i < Clusters.Length && w < words.Length; i++)
+            {
+                if (Clusters[i].Data == null || Clusters[i].Data.Prev == temp.Curr)
+                {
+                    next = Clusters[i]?.Data?.Next ?? string.Empty;
+                    Clusters[i].Data = new Data(temp, Clusters[i].HexAddress, words[w++], false);
+                    temp.Next = Clusters[i].Data.Curr;
+                    temp = Clusters[i].Data;
+                    point = i;
+                }
+            }
+            point++;
+            if (!string.IsNullOrEmpty(next) && Clusters[point]?.Data.Prev == temp.Curr)
+            {
+                Clusters[point].TreeItem = null;
+                next = Clusters[point].Data.Next;
+                Clusters[point].Data = null;
+
+                int flag = point + 1;
+                while (!string.IsNullOrEmpty(next))
+                {
+                    for (int j = flag; ; j++)
+                    {
+                        if (Clusters[j]?.Data.Curr == next)
+                        {
+                            next = Clusters[j].Data.Next;
+                            Clusters[j].Data = null;
+                            flag = j + 1;
+                            break;
+                        }
+                    }
                 }
             }
         }

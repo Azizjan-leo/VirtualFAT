@@ -30,6 +30,7 @@ namespace VirtualFAT
                     DocName = dialog.ResponseText;
                 }
             }
+            Changes = false;
             DialogResult = true;
         }
 

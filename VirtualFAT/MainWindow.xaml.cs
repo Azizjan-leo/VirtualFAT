@@ -301,6 +301,8 @@ namespace VirtualFAT
             {
                 treeItem.Document.Content = notBad.TextContent.Text;
                 treeItem.Document.LastModification = DateTime.UtcNow;
+                Drive.EditFile(treeItem, notBad.TextContent.Text);
+                DrawGrid();
             }
         }
         private void MenuItem_ClickCreateFile(object sender, RoutedEventArgs e)
