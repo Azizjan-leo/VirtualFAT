@@ -51,8 +51,8 @@ namespace VirtualFAT
                                 DocName = dialog.ResponseText;
                             }
                         }
-                        DialogResult = true;
                         Changes = false;
+                        DialogResult = true;
                         break;
                     case
                         MessageBoxResult.No:

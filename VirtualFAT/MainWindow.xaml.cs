@@ -408,7 +408,7 @@ namespace VirtualFAT
 
                 // Create our new child and put it among the parants children
                 TreeItem child = FakeOS.AddDirectory(dialog.ResponseText, ItemType.folder, parant.Id);
-
+               
                 // Find parant of item user want to delete in the Tree
                 TreeViewItem parantTVI = (TreeViewItem)LogicalTreeHelper.FindLogicalNode(FolderView, "Id" + parant.Id); //FolderView.Items.GetItemAt(0);
 
@@ -468,7 +468,9 @@ namespace VirtualFAT
 
                 // Add new child Tree-ViewItem to the parant
                 parantTVI.Items.Add(childTVI);
+
                 FolderView.UpdateLayout();
+                DrawGrid();
             }
         }
         private void MenuItem_ClickDelete(object sender, RoutedEventArgs e)
