@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace VirtualFAT
 {
@@ -11,6 +12,8 @@ namespace VirtualFAT
         public NotBad()
         {
             InitializeComponent();
+            FocusManager.SetFocusedElement(this, TextContent);
+            Keyboard.Focus(TextContent);
         }
         public bool Changes = false;
         public bool IsNewDoc;

@@ -72,6 +72,7 @@ namespace VirtualFAT
             {
                 if (item.Id == id)
                 {
+                    Drive.Remove(item);
                     this.Childs.Remove(item);
                     return;
                 }

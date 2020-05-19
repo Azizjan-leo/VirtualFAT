@@ -11,7 +11,7 @@
     <Grid>
         <StackPanel>
             <TextBlock x:Name="Message" Text="Enter folder name" />
-            <TextBox x:Name="ResponseTextBox" TextChanged="ResponseTextBox_TextChanged" />
+            <TextBox x:Name="ResponseTextBox" KeyDown="ResponseTextBox_KeyDown" TextChanged="ResponseTextBox_TextChanged" />
             <Button Content="OK" IsEnabled="False" x:Name="OkButton" Click="OKButton_Click" />
         </StackPanel>
     </Grid>

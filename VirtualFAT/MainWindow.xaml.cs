@@ -493,6 +493,7 @@ namespace VirtualFAT
                     // Remove child from children of parant 
                     parantTVI.Items.Remove(childTVI);
                     // Update the Tree so deleted item will be finaly removed from the UI
+                    DrawGrid();
                     FolderView.UpdateLayout();
                     break;
                 case MessageBoxResult.Cancel:

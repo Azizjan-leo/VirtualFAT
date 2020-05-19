@@ -30,7 +30,34 @@ namespace VirtualFAT
             Clusters[0].TreeItem = FakeOS.Volume;
             Write(Clusters[0].TreeItem, FakeOS.Volume.Name, true);
         }
+        public static void Remove(TreeItem treeItem)
+        {
+            for (int i = 1; i < Clusters.Length; i++)
+            {
+                if (Clusters[i].TreeItem == treeItem) // So it is
+                {
+                    Clusters[i].TreeItem = null;
+                    var next = Clusters[i].Data.Next;
+                    Clusters[i].Data = null;
 
+                    int flag = i + 1;
+                    while (!string.IsNullOrEmpty(next))
+                    {
+                        for (int j = flag; ; j++)
+                        {
+                            if (Clusters[j]?.Data.Curr == next)
+                            {
+                                next = Clusters[j].Data.Next;
+                                Clusters[j].Data = null;
+                                flag = j+1;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
         public static void Write(TreeItem treeItem, string data, bool isDirr)
         {
             if (isDirr)
