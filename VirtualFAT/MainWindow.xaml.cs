@@ -382,9 +382,13 @@ namespace VirtualFAT
                     child.Document.Content = notBad.TextContent.Text;
                     Drive.Write(parant, child, child.Document.Content, false);
                     child.Document.LastModification = DateTime.UtcNow;
-                    DrawGrid();
+                    
                 }
-
+                else
+                {
+                    Drive.Write(parant, child, child.Name, false);
+                }
+                DrawGrid();
             }
         }
         private void MenuItem_ClickCreateFolder(object sender, RoutedEventArgs e)

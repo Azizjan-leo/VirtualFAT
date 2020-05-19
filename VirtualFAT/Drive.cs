@@ -81,8 +81,19 @@ namespace VirtualFAT
                 }
                 RemoveInnerItem(treeItem);
             }
+            else
+            {
+                RemoveInnerItem(treeItem);
+            }
         }
 
+        /// <summary>
+        /// Writes dirs and files to the Drive :)
+        /// </summary>
+        /// <param name="parant">Parant of the item</param>
+        /// <param name="treeItem">the item</param>
+        /// <param name="data">Data to be written</param>
+        /// <param name="isDirr">Is it dirrectory</param>
         public static void Write(TreeItem parant, TreeItem treeItem, string data, bool isDirr)
         {
             if (isDirr)
